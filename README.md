@@ -1,66 +1,105 @@
-## Foundry
+# Merkle Airdrop Project
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+This repository contains a gas-optimized airdrop project that enables users to claim tokens without paying the gas fee themselves. We achieve gas savings by utilizing a Merkle tree to verify eligibility, thus minimizing unnecessary storage and costs.
 
-Foundry consists of:
+- [Merkle Airdrop Project](#merkle-airdrop-project)
+  - [Getting Started](#getting-started)
+    - [Requirements](#requirements)
+    - [Quickstart](#quickstart)
+    - [Generate Merkle Proofs](#generate-merkle-proofs)
+    - [Deploy to Anvil](#deploy-to-anvil)
+    - [Sign Claim](#sign-claim)
+    - [Updating `Interact.s.sol`](#updating-interactssol)
+    - [Execute the claim](#execute-the-claim)
+    - [check the balance](#check-the-balance)
+  - [Disclaimer](#disclaimer)
+    - [License](#license)
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+## Getting Started
 
-## Documentation
+### Requirements
 
-https://book.getfoundry.sh/
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)  
+  Confirm installation by running `git --version`.
+- [Foundry](https://getfoundry.sh/)  
+  Confirm installation by running `forge --version`.
 
-## Usage
+  ### Quickstart
 
-### Build
+1. Clone the repository:
 
-```shell
-$ forge build
+   ```bash
+   git clone https://github.com/jumpupjoran/foundry-merkle-airdrop
+   cd merkle-airdrop
+   ```
+
+2. install dependencies an build:
+   ```bash
+    make  # or `forge install && forge build` if you don’t have Make
+   ```
+
+### Generate Merkle Proofs
+
+To update the Merkle tree with a new set of addresses and generate proofs:
+
+1. Modify the `whitelist` array in `GenerateInput.s.sol` if you want to use a custom list.
+2. Run:
+   ```bash
+   make merkle
+   ```
+3. Retrieve the Merkle root from `output.json` and update `s_merkleRoot` in `DeployMerkleAirdrop.s.sol`.
+
+### Deploy to Anvil
+
+To deploy the contracts locally:
+
+1. Start a local Anvil node:
+
+   ```bash
+   make anvil
+   ```
+
+2. In a new terminal, deploy the contracts:
+
+   ```bash
+   make deploy
+   ```
+
+### Sign Claim
+
+1. Prepare the claim signature in a separate terminal:
+
+```bash
+make sign
 ```
 
-### Test
+### Updating `Interact.s.sol`
 
-```shell
-$ forge test
+1. Copy the signature bytes (without the 0x prefix) and update `SIGNATURE` in Interact.s.sol accordingly.
+2. Copy the merkle proofs of the account you want to claim with and paste them in to `PROOF_ONE` and`PROOF_TWO` in `Interact.s.sol`.
+
+### Execute the claim
+
+```bash
+make claim
 ```
 
-### Format
+### check the balance
 
-```shell
-$ forge fmt
+Verify the balance of the claiming address:
+
+```bash
+make balance
 ```
 
-### Gas Snapshots
+---
 
-```shell
-$ forge snapshot
-```
+## Disclaimer
 
-### Anvil
+This project was developed as part of the [Cyfrin Updraft Advanced Foundry Course](https://updraft.cyfrin.io/).
 
-```shell
-$ anvil
-```
+**Note:** This code is intended for educational purposes and has not undergone extensive testing. It is not recommended for use with real funds.
 
-### Deploy
+### License
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+This project is licensed under the MIT License.
